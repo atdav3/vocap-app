@@ -1,0 +1,131 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Vocap Cloud Production REST API",
+    "version": "1.2.0",
+    "description": "Production REST API for Vocap English Vocabulary Learning Mobile & Web App"
+  },
+  "servers": [
+    {
+      "url": "https://api.vocappro.app/v1",
+      "description": "Cloud Production Server (SSL / Global CDN)"
+    },
+    {
+      "url": "http://localhost:8080/v1",
+      "description": "Local Development (Web / Desktop)"
+    },
+    {
+      "url": "http://10.0.2.2:8080/v1",
+      "description": "Local Development (Android Emulator)"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Kiểm tra trạng thái kết nối Cloud (Health Check)",
+        "responses": {
+          "200": {
+            "description": "Máy chủ hoạt động bình thường"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Đăng nhập tài khoản học viên / quản trị",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username_or_email": { "type": "string", "example": "learner" },
+                  "password": { "type": "string", "example": "password123" }
+                },
+                "required": ["username_or_email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Đăng nhập thành công, trả về JWT token và thông tin người dùng" },
+          "401": { "description": "Thông tin đăng nhập không hợp lệ" }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Đăng ký tài khoản học viên mới",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string", "example": "newuser" },
+                  "email": { "type": "string", "example": "newuser@example.com" },
+                  "password": { "type": "string", "example": "password123" },
+                  "full_name": { "type": "string", "example": "Nguyễn Văn A" }
+                },
+                "required": ["username", "email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Tạo tài khoản thành công" },
+          "409": { "description": "Tên đăng nhập đã tồn tại" }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "summary": "Lấy danh sách các chủ đề từ vựng",
+        "responses": {
+          "200": { "description": "Danh sách chủ đề kèm số lượng từ vựng" }
+        }
+      }
+    },
+    "/words": {
+      "get": {
+        "summary": "Lấy danh sách từ vựng theo chủ đề",
+        "parameters": [
+          {
+            "name": "category_id",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Danh sách từ vựng" }
+        }
+      }
+    },
+    "/sync": {
+      "post": {
+        "summary": "Đồng bộ hóa 2 chiều tiến độ học tập và bài quiz",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "progress": { "type": "array", "items": { "type": "object" } },
+                  "quizzes": { "type": "array", "items": { "type": "object" } },
+                  "client_timestamp": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Đồng bộ thành công" }
+        }
+      }
+    }
+  }
+}

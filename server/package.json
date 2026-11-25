@@ -1,0 +1,19 @@
+{
+  "name": "vocap-cloud-api",
+  "version": "1.2.0",
+  "description": "Production REST API Backend for Vocap English Learning Platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "vocap",
+    "vocabulary",
+    "api",
+    "production",
+    "cloud"
+  ],
+  "author": "Vocap Team",
+  "license": "MIT"
+}

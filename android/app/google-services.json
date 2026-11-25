@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "448164398155",
+    "project_id": "vocabgo-c37af",
+    "storage_bucket": "vocabgo-c37af.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448164398155:android:ee4cf9688c1a75503eb9ce",
+        "android_client_info": {
+          "package_name": "com.example.vocab_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0gRlKNFInJCh12LyrBS7KWGvCjZdxbHg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

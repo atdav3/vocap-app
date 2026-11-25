@@ -1,0 +1,97 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      // Only a trusted Firebase Admin SDK may grant this custom claim.
+      // A user-writable profile document or a hard-coded email is not proof
+      // of administrator privileges.
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    function userProfilePath(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    function usernameClaimPath(username) {
+      return /databases/$(database)/documents/usernameClaims/$(username);
+    }
+
+    function hasClaimAfter(uid, username) {
+      return username is string
+        && username.matches('^[a-z0-9_.-]{3,30}$')
+        && getAfter(usernameClaimPath(username)).data.uid == uid
+        && getAfter(usernameClaimPath(username)).data.username_normalized == username;
+    }
+
+    // Shared learning content is readable by learners and editable by admin
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /words/{wordId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /quizQuestions/{questionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /badges/{badgeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Username claims are public only to signed-in users for collision checks.
+    // A claim can only be created in the same atomic write as its owner's
+    // profile, and a user cannot release their current claim without changing
+    // the profile in that same transaction.
+    match /usernameClaims/{normalizedUsername} {
+      allow get: if signedIn();
+      allow list: if isAdmin();
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.username_normalized == normalizedUsername
+        && hasClaimAfter(request.auth.uid, normalizedUsername)
+        && getAfter(userProfilePath(request.auth.uid)).data.username_normalized == normalizedUsername;
+      allow update: if isAdmin() || (signedIn()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.username_normalized == normalizedUsername
+        && getAfter(userProfilePath(request.auth.uid)).data.username_normalized == normalizedUsername);
+      allow delete: if isAdmin() || (signedIn()
+        && resource.data.uid == request.auth.uid
+        && getAfter(userProfilePath(request.auth.uid)).data.username_normalized != normalizedUsername);
+    }
+
+    // Private account and learning data is isolated by Firebase Auth UID.
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid)
+        && request.resource.data.get('role', 'user') == 'user'
+        && request.resource.data.get('is_active', true) == true
+        && hasClaimAfter(uid, request.resource.data.username_normalized);
+      allow update: if isAdmin() || (isOwner(uid)
+        && !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['role', 'is_active'])
+        && (request.resource.data.username_normalized == resource.data.username_normalized
+          || hasClaimAfter(uid, request.resource.data.username_normalized)));
+      allow delete: if isAdmin();
+
+      match /{collection}/{documentId} {
+        allow read, write: if isOwner(uid) || isAdmin();
+      }
+    }
+  }
+}

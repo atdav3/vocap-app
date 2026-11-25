@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VocabGo Admin Dashboard - ArchitectUI</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  
+  <!-- Google Fonts: Inter & Nunito Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- FontAwesome 6 & Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+  <style>
+    :root {
+      --app-primary: #3f6ad8;
+      --app-primary-hover: #2955c8;
+      --app-secondary: #6c757d;
+      --app-success: #3ac47d;
+      --app-info: #16aaff;
+      --app-warning: #f7b924;
+      --app-danger: #d92550;
+      --app-sidebar-bg: #ffffff;
+      --app-header-bg: #ffffff;
+      --app-main-bg: #f1f4f6;
+      --app-card-border: rgba(0, 0, 0, 0.06);
+      --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--app-main-bg);
+      color: #495057;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Top Header */
+    .app-header {
+      height: 64px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1030;
+      background: var(--app-header-bg);
+      border-bottom: 1px solid var(--app-card-border);
+      box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+    }
+
+    .app-header-logo {
+      width: 250px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: #3f6ad8;
+      text-decoration: none;
+    }
+
+    .app-header-logo .logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #3f6ad8 0%, #00c6ff 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 10px rgba(63, 106, 216, 0.35);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(58, 196, 125, 0.12);
+      color: #3ac47d;
+      border: 1px solid rgba(58, 196, 125, 0.25);
+    }
+
+    .status-pill.connecting {
+      background: rgba(247, 185, 36, 0.15);
+      color: #d89b0d;
+      border-color: rgba(247, 185, 36, 0.3);
+    }
+
+    .status-pill .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 0 rgba(58, 196, 125, 0.7);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(58, 196, 125, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 7px rgba(58, 196, 125, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(58, 196, 125, 0); }
+    }
+
+    /* Sidebar */
+    .app-sidebar {
+      width: 260px;
+      position: fixed;
+      top: 64px;
+      bottom: 0;
+      left: 0;
+      background: var(--app-sidebar-bg);
+      border-right: 1px solid var(--app-card-border);
+      box-shadow: 0.46875rem 0 2.1875rem rgba(4, 9, 20, 0.03);
+      padding: 1.25rem 0.75rem;
+      overflow-y: auto;
+      z-index: 1020;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .sidebar-heading {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #909bb0;
+      padding: 0.75rem 1rem 0.35rem;
+    }
+
+    .nav-item-architect {
+      margin-bottom: 4px;
+    }
+
+    .nav-link-architect {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.65rem 1rem;
+      color: #576574;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .nav-link-architect i {
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+      color: #7d8ba1;
+    }
+
+    .nav-link-architect:hover {
+      background: #f1f4f9;
+      color: var(--app-primary);
+    }
+
+    .nav-link-architect:hover i {
+      color: var(--app-primary);
+    }
+
+    .nav-link-architect.active {
+      background: rgba(63, 106, 216, 0.12);
+      color: var(--app-primary);
+      font-weight: 700;
+    }
+
+    .nav-link-architect.active i {
+      color: var(--app-primary);
+    }
+
+    /* Main Container */
+    .app-main {
+      margin-left: 260px;
+      margin-top: 64px;
+      padding: 2rem;
+      min-height: calc(100vh - 64px);
+    }
+
+    /* ArchitectUI Page Title */
+    .app-page-title {
+      padding: 1.5rem;
+      margin: -2rem -2rem 2rem;
+      background: #ffffff;
+      border-bottom: 1px solid var(--app-card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.02);
+    }
+
+    .page-title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .page-title-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #fff;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+    }
+
+    .page-title-heading {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #2d3748;
+      margin-bottom: 2px;
+    }
+
+    .page-title-subheading {
+      font-size: 0.84rem;
+      color: #718096;
+      margin-bottom: 0;
+    }
+
+    /* Stat Cards */
+    .card-stat {
+      border: 1px solid var(--app-card-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.025);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card-stat:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0.8rem 2.5rem rgba(4, 9, 20, 0.06);
+    }
+
+    .card-stat .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .card-stat .stat-value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #1a202c;
+      line-height: 1.2;
+    }
+
+    .card-stat .stat-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Content Cards */
+    .card-main {
+      border: 1px solid var(--app-card-border);
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.025);
+      margin-bottom: 1.75rem;
+      overflow: hidden;
+    }
+
+    .card-header-main {
+      padding: 1.15rem 1.5rem;
+      background: transparent;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-header-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #2d3748;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+    }
+
+    /* Tables */
+    .table-responsive {
+      margin: 0;
+    }
+
+    .table thead th {
+      background: #f8fafc;
+      color: #4a5568;
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid #edf2f7;
+    }
+
+    .table tbody td {
+      padding: 0.95rem 1rem;
+      vertical-align: middle;
+      font-size: 0.875rem;
+      border-bottom: 1px solid #f1f4f8;
+    }
+
+    .table tbody tr:hover {
+      background-color: #fafbfd;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background-color: var(--app-primary);
+      border-color: var(--app-primary);
+      font-weight: 600;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      padding: 0.55rem 1.15rem;
+      box-shadow: 0 4px 10px rgba(63, 106, 216, 0.25);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--app-primary-hover);
+      border-color: var(--app-primary-hover);
+    }
+
+    .btn-sm-action {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+      border-radius: 6px;
+    }
+
+    /* Badges */
+    .badge-soft-primary { background: rgba(63, 106, 216, 0.12); color: #3f6ad8; font-weight: 700; }
+    .badge-soft-success { background: rgba(58, 196, 125, 0.15); color: #28a745; font-weight: 700; }
+    .badge-soft-warning { background: rgba(247, 185, 36, 0.18); color: #d39e00; font-weight: 700; }
+    .badge-soft-danger { background: rgba(217, 37, 80, 0.15); color: #d92550; font-weight: 700; }
+    .badge-soft-info { background: rgba(22, 170, 255, 0.15); color: #16aaff; font-weight: 700; }
+
+    /* Sound TTS button */
+    .btn-tts {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #4a5568;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-tts:hover {
+      background: #ebf4ff;
+      color: #3f6ad8;
+      border-color: #bee3f8;
+      transform: scale(1.08);
+    }
+
+    /* Emoji Picker Quick Buttons */
+    .emoji-btn {
+      width: 38px;
+      height: 38px;
+      font-size: 19px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      margin: 2px;
+    }
+
+    .emoji-btn:hover, .emoji-btn.selected {
+      background: #ebf4ff;
+      border-color: #3f6ad8;
+      transform: scale(1.1);
+    }
+
+    /* Login Screen Backdrop */
+    #loginOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 440px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 2.25rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    @media (max-width: 992px) {
+      .app-sidebar { margin-left: -260px; }
+      .app-sidebar.show { margin-left: 0; }
+      .app-main { margin-left: 0; padding: 1rem; }
+      .app-page-title { margin: -1rem -1rem 1.5rem; }
+    }
+  </style>
+
+  <!-- Firebase v10 Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <!-- Top App Header -->
+  <header class="app-header">
+    <a href="#" class="app-header-logo">
+      <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+      <span>VocabGo Admin</span>
+    </a>
+
+    <!-- Mobile Sidebar Toggle -->
+    <button class="btn btn-light d-lg-none me-3" id="btnToggleSidebar">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- Cloud Firestore Live Status -->
+    <div class="d-none d-md-flex align-items-center ms-3">
+      <div id="firestoreStatusPill" class="status-pill connecting">
+        <span class="pulse-dot"></span>
+        <span id="firestoreStatusText">Đang kết nối Firestore...</span>
+      </div>
+      <span class="badge bg-light text-secondary border ms-2">vocabgo-c37af</span>
+    </div>
+
+    <!-- Header Right Controls -->
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <div class="dropdown">
+        <button class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center gap-2 border" type="button" data-bs-toggle="dropdown">
+          <img id="adminHeaderAvatar" src="https://ui-avatars.com/api/?name=Admin&background=3f6ad8&color=fff" class="rounded-circle" width="28" height="28" alt="Avatar">
+          <span id="adminHeaderName" class="fw-bold d-none d-sm-inline">Admin</span>
+          <span class="badge bg-primary ms-1">PRO</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+          <li><h6 class="dropdown-header" id="adminHeaderEmail">admin@vocabgo.app</h6></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="switchTab('tabSettings')"><i class="fa-solid fa-gear me-2 text-muted"></i>Cài đặt Firestore</a></li>
+          <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <!-- Left Sidebar -->
+  <aside class="app-sidebar" id="appSidebar">
+    <div class="sidebar-heading">BẢNG ĐIỀU KHIỂN</div>
+    <ul class="nav flex-column mb-3">
+      <li class="nav-item-architect">
+        <a class="nav-link-architect active" href="javascript:void(0)" onclick="switchTab('tabDashboard')">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Tổng quan</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-heading">QUẢN LÝ NỘI DUNG</div>
+    <ul class="nav flex-column mb-3">
+      <li class="nav-item-architect">
+        <a class="nav-link-architect" href="javascript:void(0)" onclick="switchTab('tabCategories')">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>Chủ đề (Categories)</span>
+        </a>
+      </li>
+      <li class="nav-item-architect">
+        <a class="nav-link-architect" href="javascript:void(0)" onclick="switchTab('tabWords')">
+          <i class="fa-solid fa-book-bookmark"></i>
+          <span>Từ vựng (Vocabulary)</span>
+        </a>
+      </li>
+      <li class="nav-item-architect">
+        <a class="nav-link-architect" href="javascript:void(0)" onclick="switchTab('tabQuiz')">
+          <i class="fa-solid fa-circle-question"></i>
+          <span>Câu hỏi Quiz</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-heading">NGƯỜI DÙNG & HỆ THỐNG</div>
+    <ul class="nav flex-column mb-3">
+      <li class="nav-item-architect">
+        <a class="nav-link-architect" href="javascript:void(0)" onclick="switchTab('tabUsers')">
+          <i class="fa-solid fa-users-gear"></i>
+          <span>Học viên (Users)</span>
+        </a>
+      </li>
+      <li class="nav-item-architect">
+        <a class="nav-link-architect" href="javascript:void(0)" onclick="switchTab('tabSeed')">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>Khởi tạo & Đồng bộ</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="mt-4 p-3 bg-light rounded-3 text-center border">
+      <small class="text-muted d-block fw-bold mb-1">Dự án Cloud Firestore</small>
+      <code class="text-primary fw-bold" style="font-size: 0.85rem;">vocabgo-c37af</code>
+    </div>
+  </aside>
+
+  <!-- Main Content Body -->
+  <main class="app-main">
+
+    <!-- ArchitectUI Page Title Block -->
+    <div class="app-page-title">
+      <div class="page-title-wrapper">
+        <div class="page-title-icon" id="pageTitleIcon">
+          <i class="fa-solid fa-chart-pie"></i>
+        </div>
+        <div>
+          <div class="page-title-heading" id="pageTitleHeading">Tổng quan Hệ thống</div>
+          <div class="page-title-subheading" id="pageTitleSubheading">Báo cáo thời gian thực trực tiếp từ Google Cloud Firestore</div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2" id="pageTitleActions"></div>
+    </div>
+
+    <!-- ==================== TAB 1: DASHBOARD ==================== -->
+    <div id="tabDashboard" class="admin-tab-pane">
+      <div class="row g-3 mb-4">
+        <!-- Stat 1: Words -->
+        <div class="col-sm-6 col-xl-3">
+          <div class="card-stat">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="stat-label">Tổng số từ vựng</div>
+                <div class="stat-value text-primary" id="statWordsCount">--</div>
+              </div>
+              <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                <i class="fa-solid fa-book"></i>
+              </div>
+            </div>
+            <div class="mt-3 text-muted small"><span class="badge badge-soft-success me-1">Active</span> Lưu trữ Cloud Firestore</div>
+          </div>
+        </div>
+
+        <!-- Stat 2: Categories -->
+        <div class="col-sm-6 col-xl-3">
+          <div class="card-stat">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="stat-label">Chủ đề bài học</div>
+                <div class="stat-value text-success" id="statCategoriesCount">--</div>
+              </div>
+              <div class="stat-icon bg-success bg-opacity-10 text-success">
+                <i class="fa-solid fa-layer-group"></i>
+              </div>
+            </div>
+            <div class="mt-3 text-muted small"><span class="badge badge-soft-info me-1">Danh mục</span> Có Icon & phân loại</div>
+          </div>
+        </div>
+
+        <!-- Stat 3: Quiz Questions -->
+        <div class="col-sm-6 col-xl-3">
+          <div class="card-stat">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="stat-label">Ngân hàng Quiz</div>
+                <div class="stat-value text-warning" id="statQuestionsCount">--</div>
+              </div>
+              <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                <i class="fa-solid fa-circle-question"></i>
+              </div>
+            </div>
+            <div class="mt-3 text-muted small"><span class="badge badge-soft-warning me-1">Trắc nghiệm</span> Tự động tạo thông minh</div>
+          </div>
+        </div>
+
+        <!-- Stat 4: Users -->
+        <div class="col-sm-6 col-xl-3">
+          <div class="card-stat">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="stat-label">Học viên Firestore</div>
+                <div class="stat-value text-info" id="statUsersCount">--</div>
+              </div>
+              <div class="stat-icon bg-info bg-opacity-10 text-info">
+                <i class="fa-solid fa-users"></i>
+              </div>
+            </div>
+            <div class="mt-3 text-muted small"><span class="badge badge-soft-primary me-1">Tài khoản</span> Đồng bộ SQLite ↔ Cloud</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Connection & Quick Actions -->
+      <div class="row g-3">
+        <div class="col-lg-8">
+          <div class="card-main">
+            <div class="card-header-main">
+              <h5 class="card-header-title"><i class="fa-solid fa-cloud text-primary"></i> Trạng thái Kết nối Cloud Firestore Trực tiếp</h5>
+              <button class="btn btn-sm btn-outline-primary" onclick="testConnection()"><i class="fa-solid fa-signal me-1"></i> Kiểm tra Độ trễ (Ping)</button>
+            </div>
+            <div class="card-body p-4">
+              <div class="row align-items-center">
+                <div class="col-md-6 mb-3 mb-md-0">
+                  <div class="p-3 bg-light rounded-3 border">
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="badge bg-success me-2"><i class="fa-solid fa-check"></i> Connected</span>
+                      <strong class="text-dark">Cloud Firestore Database</strong>
+                    </div>
+                    <ul class="list-unstyled mb-0 small text-muted">
+                      <li class="mb-1"><strong>Project ID:</strong> <code>vocabgo-c37af</code></li>
+                      <li class="mb-1"><strong>Database mode:</strong> Cloud Firestore (Native)</li>
+                      <li class="mb-1"><strong>Firebase Auth:</strong> Email/Password enabled</li>
+                      <li><strong>Độ trễ phản hồi (Latency):</strong> <span id="pingLatency" class="text-success fw-bold">~ 65ms</span></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 bg-light rounded-3 border">
+                    <h6 class="fw-bold text-dark mb-2"><i class="fa-solid fa-bolt text-warning me-1"></i> Thao tác Quản trị Nhanh</h6>
+                    <div class="d-grid gap-2">
+                      <button class="btn btn-primary btn-sm text-start" onclick="openAddWordModal()">
+                        <i class="fa-solid fa-plus-circle me-1"></i> Thêm từ vựng tiếng Anh mới
+                      </button>
+                      <button class="btn btn-warning btn-sm text-start text-dark" onclick="openSmartQuizModal()">
+                        <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Tự động tạo Quiz từ kho từ vựng
+                      </button>
+                      <button class="btn btn-outline-secondary btn-sm text-start" onclick="switchTab('tabCategories')">
+                        <i class="fa-solid fa-folder-plus me-1"></i> Quản lý & Bổ sung chủ đề
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="card-main">
+            <div class="card-header-main">
+              <h5 class="card-header-title"><i class="fa-solid fa-shield-halved text-success"></i> Tài khoản Quản trị</h5>
+            </div>
+            <div class="card-body p-4 text-center">
+              <img id="adminCardAvatar" src="https://ui-avatars.com/api/?name=Admin&background=3f6ad8&color=fff&size=80" class="rounded-circle shadow-sm mb-3" width="70" height="70" alt="Admin">
+              <h5 class="fw-bold mb-1" id="adminCardName">Quản trị viên</h5>
+              <p class="text-muted small mb-2" id="adminCardEmail">—</p>
+              <div class="d-inline-block badge badge-soft-primary px-3 py-2 mb-3">SUPER ADMINISTRATOR</div>
+              <hr>
+              <p class="small text-muted mb-0">Có toàn quyền Quản lý Dữ liệu, Thay đổi Vai trò người dùng, Bật/Tắt chủ đề và Biên tập nội dung trên Cloud Firestore.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: CATEGORIES ==================== -->
+    <div id="tabCategories" class="admin-tab-pane d-none">
+      <div class="card-main">
+        <div class="card-header-main">
+          <h5 class="card-header-title"><i class="fa-solid fa-layer-group text-primary"></i> Danh sách Chủ đề Bài học</h5>
+          <div class="d-flex gap-2">
+            <input type="text" id="categorySearchInput" class="form-control form-control-sm" placeholder="Tìm kiếm chủ đề..." style="width: 220px;" oninput="filterCategories()">
+            <button class="btn btn-primary btn-sm" onclick="openAddCategoryModal()"><i class="fa-solid fa-plus me-1"></i> Thêm Chủ đề Mới</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0" id="categoriesTable">
+            <thead>
+              <tr>
+                <th style="width: 60px;">ID</th>
+                <th style="width: 70px;">Icon</th>
+                <th>Tên Chủ đề</th>
+                <th>Mô tả</th>
+                <th>Số từ vựng</th>
+                <th>Trạng thái</th>
+                <th style="width: 140px;" class="text-end">Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="categoriesTableBody">
+              <tr><td colspan="7" class="text-center py-4 text-muted"><i class="fa-solid fa-spinner fa-spin me-2"></i>Đang tải danh mục từ Firestore...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: VOCABULARY WORDS ==================== -->
+    <div id="tabWords" class="admin-tab-pane d-none">
+      <div class="card-main">
+        <div class="card-header-main flex-wrap gap-2">
+          <h5 class="card-header-title"><i class="fa-solid fa-book-bookmark text-primary"></i> Kho Từ vựng Tiếng Anh</h5>
+          <div class="d-flex flex-wrap gap-2">
+            <select id="wordCategoryFilter" class="form-select form-select-sm" style="width: 160px;" onchange="filterWords()">
+              <option value="">Tất cả chủ đề</option>
+            </select>
+            <select id="wordDifficultyFilter" class="form-select form-select-sm" style="width: 130px;" onchange="filterWords()">
+              <option value="">Tất cả độ khó</option>
+              <option value="1">Cấp 1 (Cơ bản)</option>
+              <option value="2">Cấp 2 (Trung bình)</option>
+              <option value="3">Cấp 3 (Nâng cao)</option>
+            </select>
+            <input type="text" id="wordSearchInput" class="form-control form-control-sm" placeholder="Tìm theo từ, nghĩa..." style="width: 200px;" oninput="filterWords()">
+            <button class="btn btn-primary btn-sm" onclick="openAddWordModal()"><i class="fa-solid fa-plus me-1"></i> Thêm từ vựng</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0" id="wordsTable">
+            <thead>
+              <tr>
+                <th style="width: 50px;">Phát âm</th>
+                <th>Từ vựng (English)</th>
+                <th>Phiên âm IPA</th>
+                <th>Loại từ</th>
+                <th>Nghĩa tiếng Việt</th>
+                <th>Ví dụ & Dịch nghĩa</th>
+                <th>Chủ đề</th>
+                <th>Độ khó</th>
+                <th style="width: 120px;" class="text-end">Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="wordsTableBody">
+              <tr><td colspan="9" class="text-center py-4 text-muted"><i class="fa-solid fa-spinner fa-spin me-2"></i>Đang tải kho từ vựng từ Firestore...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: QUIZ QUESTIONS ==================== -->
+    <div id="tabQuiz" class="admin-tab-pane d-none">
+      <div class="card-main">
+        <div class="card-header-main flex-wrap gap-2">
+          <h5 class="card-header-title"><i class="fa-solid fa-circle-question text-warning"></i> Ngân hàng Câu hỏi Trắc nghiệm</h5>
+          <div class="d-flex gap-2">
+            <button class="btn btn-warning btn-sm text-dark fw-bold" onclick="openSmartQuizModal()"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> Tự động tạo Quiz Thông minh</button>
+            <button class="btn btn-primary btn-sm" onclick="openAddQuestionModal()"><i class="fa-solid fa-plus me-1"></i> Thêm câu hỏi thủ công</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0" id="quizTable">
+            <thead>
+              <tr>
+                <th style="width: 60px;">ID</th>
+                <th>Nội dung câu hỏi</th>
+                <th>Loại</th>
+                <th>Đáp án Đúng</th>
+                <th>Các phương án lựa chọn</th>
+                <th>Chủ đề</th>
+                <th style="width: 120px;" class="text-end">Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="quizTableBody">
+              <tr><td colspan="7" class="text-center py-4 text-muted"><i class="fa-solid fa-spinner fa-spin me-2"></i>Đang tải câu hỏi quiz...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: USERS MANAGEMENT ==================== -->
+    <div id="tabUsers" class="admin-tab-pane d-none">
+      <div class="card-main">
+        <div class="card-header-main">
+          <h5 class="card-header-title"><i class="fa-solid fa-users text-info"></i> Danh sách Học viên & Tài khoản Cloud</h5>
+          <input type="text" id="userSearchInput" class="form-control form-control-sm" placeholder="Tìm theo tên, email..." style="width: 220px;" oninput="filterUsers()">
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0" id="usersTable">
+            <thead>
+              <tr>
+                <th>Học viên</th>
+                <th>Email</th>
+                <th>Tên đăng nhập</th>
+                <th>Vai trò (Role)</th>
+                <th>Ngày tạo</th>
+                <th>Trạng thái</th>
+                <th>Quản lý trong Firebase Console</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="7" class="text-center py-4 text-muted"><i class="fa-solid fa-spinner fa-spin me-2"></i>Đang tải danh sách người dùng...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 6: SEED & SYNC ==================== -->
+    <div id="tabSeed" class="admin-tab-pane d-none">
+      <div class="card-main">
+        <div class="card-header-main">
+          <h5 class="card-header-title"><i class="fa-solid fa-cloud-arrow-up text-primary"></i> Tiện ích Khởi tạo & Dữ liệu Mẫu Cloud Firestore</h5>
+        </div>
+        <div class="card-body p-4">
+          <div class="alert alert-info">
+            <h6 class="fw-bold mb-1"><i class="fa-solid fa-circle-info me-1"></i> Dữ liệu Chuẩn VocabGo</h6>
+            <p class="mb-0 small">Nạp bộ từ vựng mẫu chất lượng cao (Du lịch, Công nghệ, Kinh doanh, Đời sống, Ẩm thực) trực tiếp lên Cloud Firestore để học viên có thể học ngay lập tức trên ứng dụng Flutter.</p>
+          </div>
+
+          <div class="row g-3 mt-2">
+            <div class="col-md-6">
+              <div class="p-3 border rounded-3 bg-light">
+                <h6 class="fw-bold text-dark"><i class="fa-solid fa-database text-success me-1"></i> Nạp Dữ liệu Mẫu đầy đủ (Default Seed)</h6>
+                <p class="small text-muted">Bao gồm 5 Chủ đề hoàn chỉnh, 30+ Từ vựng chuẩn IPA kèm câu ví dụ, 20 Câu hỏi trắc nghiệm và Huy hiệu khen thưởng.</p>
+                <button class="btn btn-success btn-sm" onclick="seedSampleData()"><i class="fa-solid fa-upload me-1"></i> Bắt đầu Nạp lên Firestore</button>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-3 border rounded-3 bg-light">
+                <h6 class="fw-bold text-dark"><i class="fa-solid fa-download text-primary me-1"></i> Sao lưu Dữ liệu JSON (Backup)</h6>
+                <p class="small text-muted">Tải về toàn bộ danh mục chủ đề, từ vựng và câu hỏi quiz hiện có dưới dạng tệp JSON để lưu trữ hoặc di chuyển.</p>
+                <button class="btn btn-primary btn-sm" onclick="exportDataBackup()"><i class="fa-solid fa-file-arrow-down me-1"></i> Xuất Tệp JSON Backup</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==================== MODAL: ADD / EDIT CATEGORY ==================== -->
+  <div class="modal fade" id="categoryModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="categoryModalTitle">Thêm Chủ đề Mới</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="categoryForm">
+            <input type="hidden" id="categoryId">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Tên chủ đề <span class="text-danger">*</span></label>
+              <input type="text" id="categoryName" class="form-control" placeholder="Ví dụ: Du lịch & Khám phá" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Biểu tượng / Emoji <span class="text-danger">*</span></label>
+              <div class="input-group mb-2">
+                <input type="text" id="categoryEmoji" class="form-control text-center fs-4" style="max-width: 80px;" value="✈️" required>
+                <span class="input-group-text small text-muted">Nhấn emoji bên dưới để chọn nhanh:</span>
+              </div>
+              <div class="d-flex flex-wrap gap-1" id="emojiPickerList">
+                <button type="button" class="emoji-btn" onclick="selectEmoji('✈️')">✈️</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji('🍕')">🍕</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji('💻')">💻</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji('💼')">💼</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji('🎓')">🎓</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji('🏥')">🏥</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji('⚽')">⚽</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji('🌿')">🌿</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji('🎨')">🎨</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji('🐾')">🐾</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji('🚗')">🚗</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji('📱')">📱</button>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Mô tả ngắn</label>
+              <textarea id="categoryDescription" class="form-control" rows="2" placeholder="Từ vựng cần thiết cho chuyến du lịch nước ngoài..."></textarea>
+            </div>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="categoryActive" checked>
+              <label class="form-check-label fw-bold" for="categoryActive">Kích hoạt hiển thị cho học viên</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" class="btn btn-primary" onclick="saveCategory()"><i class="fa-solid fa-floppy-disk me-1"></i> Lưu Chủ đề</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: ADD / EDIT WORD (THÔNG MINH) ==================== -->
+  <div class="modal fade" id="wordModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="wordModalTitle">Thêm Từ vựng Thông minh</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="wordForm">
+            <input type="hidden" id="wordId">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Từ tiếng Anh (English) <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="text" id="wordEnglish" class="form-control fw-bold" placeholder="Ví dụ: serendipity" required oninput="autoSuggestIPA()">
+                  <button type="button" class="btn btn-outline-secondary" onclick="speakCurrentModalWord()" title="Nghe thử"><i class="fa-solid fa-volume-high"></i></button>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Phiên âm Quốc tế (IPA)</label>
+                <div class="input-group">
+                  <input type="text" id="wordIPA" class="form-control" placeholder="/ˌsɛrənˈdɪpɪti/">
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="autoSuggestIPA()" title="Tự động gợi ý"><i class="fa-solid fa-wand-magic-sparkles me-1"></i>Gợi ý</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Nghĩa tiếng Việt <span class="text-danger">*</span></label>
+                <input type="text" id="wordVietnamese" class="form-control" placeholder="Ví dụ: sự tình cờ may mắn" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label fw-bold">Loại từ</label>
+                <select id="wordPartOfSpeech" class="form-select">
+                  <option value="noun">Danh từ (n)</option>
+                  <option value="verb">Động từ (v)</option>
+                  <option value="adjective">Tính từ (adj)</option>
+                  <option value="adverb">Trạng từ (adv)</option>
+                  <option value="phrase">Cụm từ (phrase)</option>
+                  <option value="idiom">Thành ngữ (idiom)</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label fw-bold">Độ khó</label>
+                <select id="wordDifficulty" class="form-select">
+                  <option value="1">⭐ Cấp 1 (Dễ)</option>
+                  <option value="2">⭐⭐ Cấp 2 (Vừa)</option>
+                  <option value="3">⭐⭐⭐ Cấp 3 (Khó)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Thuộc Chủ đề <span class="text-danger">*</span></label>
+              <select id="wordCategoryId" class="form-select" required>
+                <!-- Dynamic categories -->
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Câu ví dụ tiếng Anh</label>
+              <input type="text" id="wordExample" class="form-control" placeholder="It was pure serendipity that we met on the train.">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Bản dịch câu ví dụ</label>
+              <input type="text" id="wordExampleTranslation" class="form-control" placeholder="Thật là một sự tình cờ may mắn khi chúng tôi gặp nhau trên tàu.">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" class="btn btn-primary" onclick="saveWord()"><i class="fa-solid fa-floppy-disk me-1"></i> Lưu Từ vựng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: ADD / EDIT QUESTION ==================== -->
+  <div class="modal fade" id="questionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="questionModalTitle">Thêm Câu hỏi Trắc nghiệm</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="questionForm">
+            <input type="hidden" id="questionId">
+            <div class="row g-3 mb-3">
+              <div class="col-md-8">
+                <label class="form-label fw-bold">Nội dung câu hỏi (Prompt) <span class="text-danger">*</span></label>
+                <input type="text" id="questionPrompt" class="form-control" placeholder="Ví dụ: Nghĩa của từ 'adventure' là gì?" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-bold">Thuộc Chủ đề</label>
+                <select id="questionCategoryId" class="form-select">
+                  <!-- Dynamic categories -->
+                </select>
+              </div>
+            </div>
+
+            <label class="form-label fw-bold">Các lựa chọn & Chọn đáp án đúng <span class="text-danger">*</span></label>
+            <div class="row g-2 mb-2">
+              <div class="col-12">
+                <div class="input-group">
+                  <div class="input-group-text"><input type="radio" name="correctOptionRadio" value="0" checked></div>
+                  <span class="input-group-text fw-bold">A</span>
+                  <input type="text" id="option0" class="form-control" placeholder="Đáp án A" required>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="input-group">
+                  <div class="input-group-text"><input type="radio" name="correctOptionRadio" value="1"></div>
+                  <span class="input-group-text fw-bold">B</span>
+                  <input type="text" id="option1" class="form-control" placeholder="Đáp án B" required>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="input-group">
+                  <div class="input-group-text"><input type="radio" name="correctOptionRadio" value="2"></div>
+                  <span class="input-group-text fw-bold">C</span>
+                  <input type="text" id="option2" class="form-control" placeholder="Đáp án C" required>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="input-group">
+                  <div class="input-group-text"><input type="radio" name="correctOptionRadio" value="3"></div>
+                  <span class="input-group-text fw-bold">D</span>
+                  <input type="text" id="option3" class="form-control" placeholder="Đáp án D" required>
+                </div>
+              </div>
+            </div>
+            <small class="text-muted"><i class="fa-solid fa-circle-check text-success me-1"></i> Tích chọn nút tròn ở đáp án bạn muốn thiết lập làm đáp án ĐÚNG.</small>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" class="btn btn-primary" onclick="saveQuestion()"><i class="fa-solid fa-floppy-disk me-1"></i> Lưu Câu hỏi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: SMART QUIZ GENERATOR ==================== -->
+  <div class="modal fade" id="smartQuizModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-warning bg-opacity-10">
+          <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-wand-magic-sparkles text-warning me-2"></i> Trình sinh Quiz Thông minh</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="small text-muted mb-3">Hệ thống sẽ tự động phân tích kho từ vựng hiện có trong Firestore, tự tạo các câu hỏi trắc nghiệm nghĩa từ kèm 4 lựa chọn (1 đúng, 3 đáp án nhiễu) hoàn toàn tự động!</p>
+          
+          <div class="mb-3">
+            <label class="form-label fw-bold">Chọn Chủ đề</label>
+            <select id="smartQuizCategorySelect" class="form-select">
+              <option value="all">Tất cả các chủ đề</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Số lượng câu hỏi muốn sinh</label>
+            <select id="smartQuizCountSelect" class="form-select">
+              <option value="5">5 câu hỏi</option>
+              <option value="10" selected>10 câu hỏi</option>
+              <option value="15">15 câu hỏi</option>
+              <option value="20">20 câu hỏi</option>
+            </select>
+          </div>
+
+          <div class="alert alert-warning py-2 mb-0 small">
+            <i class="fa-solid fa-lightbulb me-1"></i> Câu hỏi sinh ra sẽ được lưu trực tiếp vào Firestore collection <code>quizQuestions</code> và xuất hiện ngay lập tức trong bài thi của học viên!
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+          <button type="button" class="btn btn-warning text-dark fw-bold" onclick="runSmartQuizGenerator()"><i class="fa-solid fa-bolt me-1"></i> Sinh Quiz Ngay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LOGIN BACKDROP (FIREBASE AUTH) ==================== -->
+  <div id="loginOverlay" class="d-none">
+    <div class="login-box">
+      <div class="text-center mb-4">
+        <div class="logo-icon mx-auto mb-2" style="width: 52px; height: 52px; font-size: 26px; border-radius: 14px; background: linear-gradient(135deg, #3f6ad8 0%, #00c6ff 100%); color: #fff; display: flex; align-items: center; justify-content: center;">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <h4 class="fw-bold mb-1">VocabGo Admin</h4>
+        <p class="text-muted small">Đăng nhập vào Hệ thống Quản trị Cloud Firestore</p>
+      </div>
+
+      <form id="adminLoginForm" onsubmit="handleLogin(event)">
+        <div class="mb-3">
+          <label class="form-label fw-bold small text-muted">Email Quản trị viên</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+            <input type="email" id="loginEmail" class="form-control" required placeholder="Email Firebase">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold small text-muted">Mật khẩu</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+            <input type="password" id="loginPassword" class="form-control" required placeholder="••••••••">
+          </div>
+        </div>
+
+        <div class="d-grid gap-2 mb-3">
+          <button type="submit" id="btnLoginSubmit" class="btn btn-primary py-2 fw-bold">
+            <i class="fa-solid fa-right-to-bracket me-1"></i> Đăng nhập Admin
+          </button>
+        </div>
+
+        <div class="alert alert-info small mt-3 mb-0">
+          Chỉ tài khoản Firebase có custom claim Admin mới mở được trang này.
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle & SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    /* =========================================================================
+       FIREBASE INITIALIZATION & STATE
+       ========================================================================= */
+    const firebaseConfig = {
+      apiKey: "AIzaSyBGNU4DbJQmhRqIcFLO9TkSY2C8j4rns0c",
+      authDomain: "vocabgo-c37af.firebaseapp.com",
+      projectId: "vocabgo-c37af",
+      storageBucket: "vocabgo-c37af.firebasestorage.app",
+      messagingSenderId: "448164398155",
+      appId: "1:448164398155:web:ba366e6620fbb45f3eb9ce",
+      measurementId: "G-V10QBLFZ30"
+    };
+
+    let app, auth, db;
+    let currentUser = null;
+    let isAdmin = false;
+    let realtimeStarted = false;
+    let realtimeUnsubscribers = [];
+
+    // Cache state
+    let state = {
+      categories: [],
+      words: [],
+      questions: [],
+      users: []
+    };
+
+    // Initialize Firebase
+    try {
+      app = firebase.initializeApp(firebaseConfig);
+      auth = firebase.auth();
+      db = firebase.firestore();
+      console.log("[VocabGo Admin] Firebase initialized for project:", firebaseConfig.projectId);
+    } catch (e) {
+      console.error("[VocabGo Admin] Firebase Init Error:", e);
+    }
+
+    // Auth State Observer
+    auth.onAuthStateChanged(async (user) => {
+      currentUser = user;
+      if (user) {
+        const authorized = await checkAdminRole(user);
+        if (!authorized) {
+          await auth.signOut();
+          document.getElementById("loginOverlay").classList.remove("d-none");
+          return;
+        }
+        document.getElementById("loginOverlay").classList.add("d-none");
+        document.getElementById("adminHeaderName").textContent = user.displayName || user.email.split('@')[0];
+        document.getElementById("adminHeaderEmail").textContent = user.email;
+        document.getElementById("adminCardEmail").textContent = user.email;
+        document.getElementById("adminCardName").textContent = user.displayName || "Quản trị viên";
+        initRealtimeListeners();
+      } else {
+        isAdmin = false;
+        stopRealtimeListeners();
+        document.getElementById("loginOverlay").classList.remove("d-none");
+      }
+    });
+
+    async function checkAdminRole(user) {
+      try {
+        const token = await user.getIdTokenResult(true);
+        isAdmin = token.claims.admin === true;
+      } catch (_) {
+        isAdmin = false;
+      }
+      return isAdmin;
+    }
+
+    function setConnectedStatus(connected, latency = null) {
+      const pill = document.getElementById("firestoreStatusPill");
+      const text = document.getElementById("firestoreStatusText");
+      const ping = document.getElementById("pingLatency");
+      if (connected) {
+        pill.className = "status-pill";
+        text.textContent = "Firestore Active";
+        if (ping) ping.textContent = latency == null ? "Đã kết nối" : `~ ${latency}ms`;
+      } else {
+        pill.className = "status-pill connecting";
+        text.textContent = "Đang kết nối...";
+        if (ping) ping.textContent = "Ngoại tuyến";
+      }
+    }
+
+    async function testConnection() {
+      const start = performance.now();
+      try {
+        await db.collection("categories").limit(1).get();
+        const latency = Math.round(performance.now() - start);
+        setConnectedStatus(true, latency);
+        Swal.fire({
+          icon: 'success',
+          title: 'Kết nối Firestore Tuyệt vời!',
+          text: `Độ trễ máy chủ: ${latency}ms. Dữ liệu đang được đồng bộ theo thời gian thực.`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } catch (err) {
+        setConnectedStatus(false);
+        Swal.fire({
+          icon: 'warning',
+          title: 'Thông báo kết nối',
+          text: 'Không thể ping máy chủ Firestore: ' + err.message
+        });
+      }
+    }
+
+    /* =========================================================================
+       REALTIME DATA LISTENERS
+       ========================================================================= */
+    function initRealtimeListeners() {
+      if (!isAdmin || realtimeStarted) return;
+      realtimeStarted = true;
+      // 1. Categories
+      realtimeUnsubscribers.push(db.collection("categories").onSnapshot((snapshot) => {
+        state.categories = [];
+        snapshot.forEach((doc) => {
+          state.categories.push({ docId: doc.id, ...doc.data() });
+        });
+        document.getElementById("statCategoriesCount").textContent = state.categories.length;
+        renderCategories();
+        updateCategoryDropdowns();
+        setConnectedStatus(true);
+      }, (err) => console.warn("Categories listener:", err)));
+
+      // 2. Words
+      realtimeUnsubscribers.push(db.collection("words").onSnapshot((snapshot) => {
+        state.words = [];
+        snapshot.forEach((doc) => {
+          state.words.push({ docId: doc.id, ...doc.data() });
+        });
+        document.getElementById("statWordsCount").textContent = state.words.length;
+        renderWords();
+      }, (err) => console.warn("Words listener:", err)));
+
+      // 3. Quiz Questions
+      realtimeUnsubscribers.push(db.collection("quizQuestions").onSnapshot((snapshot) => {
+        state.questions = [];
+        snapshot.forEach((doc) => {
+          state.questions.push({ docId: doc.id, ...doc.data() });
+        });
+        document.getElementById("statQuestionsCount").textContent = state.questions.length;
+        renderQuestions();
+      }, (err) => console.warn("Quiz listener:", err)));
+
+      // 4. Users
+      realtimeUnsubscribers.push(db.collection("users").onSnapshot((snapshot) => {
+        state.users = [];
+        snapshot.forEach((doc) => {
+          state.users.push({ docId: doc.id, ...doc.data() });
+        });
+        document.getElementById("statUsersCount").textContent = state.users.length;
+        renderUsers();
+      }, (err) => console.warn("Users listener:", err)));
+    }
+
+    function stopRealtimeListeners() {
+      realtimeUnsubscribers.forEach((unsubscribe) => unsubscribe());
+      realtimeUnsubscribers = [];
+      realtimeStarted = false;
+    }
+
+    /* =========================================================================
+       RENDER FUNCTIONS
+       ========================================================================= */
+    function renderCategories() {
+      const tbody = document.getElementById("categoriesTableBody");
+      const filter = document.getElementById("categorySearchInput")?.value.toLowerCase().trim() || "";
+      const filtered = state.categories.filter(c => (c.name || "").toLowerCase().includes(filter) || (c.description || "").toLowerCase().includes(filter));
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Chưa có chủ đề nào được tạo. Nhấn "+ Thêm Chủ đề Mới" để bắt đầu.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(c => {
+        const count = state.words.filter(w => String(w.category_id) === String(c.id || c.docId)).length;
+        const isActive = c.is_active !== false && c.is_active !== 0;
+        return `
+          <tr>
+            <td class="text-muted fw-bold">#${c.id || c.docId}</td>
+            <td><span class="fs-4">${c.image || '📚'}</span></td>
+            <td><strong>${escapeHtml(c.name || 'Không tên')}</strong></td>
+            <td class="text-muted small">${escapeHtml(c.description || '')}</td>
+            <td><span class="badge badge-soft-primary">${count} từ</span></td>
+            <td>${isActive ? '<span class="badge badge-soft-success">Hoạt động</span>' : '<span class="badge badge-soft-danger">Đã ẩn</span>'}</td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-primary btn-sm-action me-1" onclick="openEditCategoryModal('${c.docId}')"><i class="fa-solid fa-pen"></i></button>
+              <button class="btn btn-sm btn-outline-danger btn-sm-action" onclick="deleteCategory('${c.docId}', '${escapeHtml(c.name)}')"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderWords() {
+      const tbody = document.getElementById("wordsTableBody");
+      const search = document.getElementById("wordSearchInput")?.value.toLowerCase().trim() || "";
+      const catFilter = document.getElementById("wordCategoryFilter")?.value || "";
+      const diffFilter = document.getElementById("wordDifficultyFilter")?.value || "";
+
+      let filtered = state.words.filter(w => {
+        const matchSearch = (w.english || "").toLowerCase().includes(search) || (w.vietnamese || "").toLowerCase().includes(search);
+        const matchCat = !catFilter || String(w.category_id) === String(catFilter);
+        const matchDiff = !diffFilter || String(w.difficulty) === String(diffFilter);
+        return matchSearch && matchCat && matchDiff;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">Không tìm thấy từ vựng nào.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(w => {
+        const cat = state.categories.find(c => String(c.id || c.docId) === String(w.category_id));
+        const catName = cat ? `${cat.image || '📚'} ${cat.name}` : 'Mặc định';
+        const diffStars = '⭐'.repeat(w.difficulty || 1);
+        return `
+          <tr>
+            <td>
+              <button class="btn-tts" onclick="speakText('${escapeHtml(w.english)}')" title="Phát âm ${escapeHtml(w.english)}">
+                <i class="fa-solid fa-volume-high"></i>
+              </button>
+            </td>
+            <td><strong class="text-primary fs-6">${escapeHtml(w.english || '')}</strong></td>
+            <td><code class="text-muted">${escapeHtml(w.pronunciation || '')}</code></td>
+            <td><span class="badge badge-soft-info">${escapeHtml(w.part_of_speech || 'noun')}</span></td>
+            <td><strong class="text-dark">${escapeHtml(w.vietnamese || '')}</strong></td>
+            <td class="small">
+              <div><em>${escapeHtml(w.example || '')}</em></div>
+              <div class="text-muted">${escapeHtml(w.example_translation || '')}</div>
+            </td>
+            <td><span class="badge badge-soft-primary">${escapeHtml(catName)}</span></td>
+            <td><small title="Độ khó ${w.difficulty || 1}">${diffStars}</small></td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-primary btn-sm-action me-1" onclick="openEditWordModal('${w.docId}')"><i class="fa-solid fa-pen"></i></button>
+              <button class="btn btn-sm btn-outline-danger btn-sm-action" onclick="deleteWord('${w.docId}', '${escapeHtml(w.english)}')"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderQuestions() {
+      const tbody = document.getElementById("quizTableBody");
+      if (state.questions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Chưa có câu hỏi quiz nào. Hãy bấm "Tự động tạo Quiz Thông minh" để sinh câu hỏi!</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = state.questions.map(q => {
+        const cat = state.categories.find(c => String(c.id || c.docId) === String(q.category_id));
+        let optionsList = q.options || [];
+        if (typeof optionsList === 'string') {
+          try { optionsList = JSON.parse(optionsList); } catch (_) { optionsList = []; }
+        }
+        const optHtml = optionsList.map(opt => {
+          const isCorrect = String(opt).trim().toLowerCase() === String(q.correct_answer).trim().toLowerCase();
+          return `<span class="badge ${isCorrect ? 'bg-success' : 'bg-light text-dark border'} me-1 mb-1">${escapeHtml(opt)}</span>`;
+        }).join('');
+
+        return `
+          <tr>
+            <td class="text-muted fw-bold">#${q.id || q.docId}</td>
+            <td><strong>${escapeHtml(q.prompt || '')}</strong></td>
+            <td><span class="badge badge-soft-info">${escapeHtml(q.question_type || 'meaning')}</span></td>
+            <td><span class="badge badge-soft-success fw-bold">${escapeHtml(q.correct_answer || '')}</span></td>
+            <td><div class="d-flex flex-wrap">${optHtml}</div></td>
+            <td><small class="text-muted">${escapeHtml(cat?.name || 'Tất cả')}</small></td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-danger btn-sm-action" onclick="deleteQuestion('${q.docId}')"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderUsers() {
+      const tbody = document.getElementById("usersTableBody");
+      const search = document.getElementById("userSearchInput")?.value.toLowerCase().trim() || "";
+      const filtered = state.users.filter(u => (u.full_name || "").toLowerCase().includes(search) || (u.email || "").toLowerCase().includes(search));
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Chưa có người dùng nào.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => {
+        const isAdminUser = u.role === "admin";
+        const isActive = u.is_active !== false && u.is_active !== 0;
+        const initial = (u.full_name || u.email || 'U')[0].toUpperCase();
+        return `
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">${initial}</div>
+                <div>
+                  <div class="fw-bold">${escapeHtml(u.full_name || 'Học viên')}</div>
+                  <small class="text-muted">${u.docId}</small>
+                </div>
+              </div>
+            </td>
+            <td>${escapeHtml(u.email || '')}</td>
+            <td><code>${escapeHtml(u.username || '')}</code></td>
+            <td>
+              <span class="badge ${isAdminUser ? 'bg-danger' : 'badge-soft-primary'}">
+                ${isAdminUser ? 'ADMIN' : 'LEARNER'}
+              </span>
+            </td>
+            <td><small class="text-muted">${(u.created_at || '').substring(0, 10)}</small></td>
+            <td>
+              ${isActive ? '<span class="badge badge-soft-success">Hoạt động</span>' : '<span class="badge badge-soft-danger">Đã khóa</span>'}
+            </td>
+            <td><small class="text-muted">Tạo, khóa và đặt lại mật khẩu tại Firebase Console.</small></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateCategoryDropdowns() {
+      const selects = [
+        document.getElementById("wordCategoryFilter"),
+        document.getElementById("wordCategoryId"),
+        document.getElementById("questionCategoryId"),
+        document.getElementById("smartQuizCategorySelect")
+      ];
+      selects.forEach(select => {
+        if (!select) return;
+        const isFilter = select.id === "wordCategoryFilter" || select.id === "smartQuizCategorySelect";
+        const current = select.value;
+        let html = isFilter ? (select.id === "smartQuizCategorySelect" ? `<option value="all">Tất cả các chủ đề</option>` : `<option value="">Tất cả chủ đề</option>`) : '';
+        state.categories.forEach(c => {
+          html += `<option value="${c.id || c.docId}">${c.image || '📚'} ${escapeHtml(c.name || 'Không tên')}</option>`;
+        });
+        select.innerHTML = html;
+        if (current) select.value = current;
+      });
+    }
+
+    /* =========================================================================
+       CRUD ACTIONS (CATEGORIES)
+       ========================================================================= */
+    let categoryModalInstance;
+    function openAddCategoryModal() {
+      document.getElementById("categoryId").value = "";
+      document.getElementById("categoryName").value = "";
+      document.getElementById("categoryEmoji").value = "✈️";
+      document.getElementById("categoryDescription").value = "";
+      document.getElementById("categoryActive").checked = true;
+      document.getElementById("categoryModalTitle").textContent = "Thêm Chủ đề Mới";
+      categoryModalInstance = new bootstrap.Modal(document.getElementById("categoryModal"));
+      categoryModalInstance.show();
+    }
+
+    function openEditCategoryModal(docId) {
+      const c = state.categories.find(item => item.docId === docId);
+      if (!c) return;
+      document.getElementById("categoryId").value = docId;
+      document.getElementById("categoryName").value = c.name || "";
+      document.getElementById("categoryEmoji").value = c.image || "📚";
+      document.getElementById("categoryDescription").value = c.description || "";
+      document.getElementById("categoryActive").checked = c.is_active !== false && c.is_active !== 0;
+      document.getElementById("categoryModalTitle").textContent = "Chỉnh sửa Chủ đề";
+      categoryModalInstance = new bootstrap.Modal(document.getElementById("categoryModal"));
+      categoryModalInstance.show();
+    }
+
+    function selectEmoji(emoji) {
+      document.getElementById("categoryEmoji").value = emoji;
+    }
+
+    async function saveCategory() {
+      const docId = document.getElementById("categoryId").value;
+      const name = document.getElementById("categoryName").value.trim();
+      const image = document.getElementById("categoryEmoji").value.trim() || "📚";
+      const description = document.getElementById("categoryDescription").value.trim();
+      const isActive = document.getElementById("categoryActive").checked;
+
+      if (!name) {
+        Swal.fire('Lỗi', 'Vui lòng nhập tên chủ đề', 'error');
+        return;
+      }
+
+      const id = docId ? (Number(docId) || docId) : (Date.now() % 100000);
+      const data = {
+        id: id,
+        name: name,
+        image: image,
+        description: description,
+        is_active: isActive,
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        const targetDocId = docId || String(id);
+        await db.collection("categories").doc(targetDocId).set(data, { merge: true });
+        categoryModalInstance.hide();
+        Swal.fire({ icon: 'success', title: 'Đã lưu chủ đề lên Firestore!', timer: 1500, showConfirmButton: false });
+      } catch (err) {
+        Swal.fire('Lỗi', 'Không thể lưu chủ đề: ' + err.message, 'error');
+      }
+    }
+
+    async function deleteCategory(docId, name) {
+      const res = await Swal.fire({
+        title: `Xác nhận xóa chủ đề?`,
+        text: `Bạn có chắc chắn muốn xóa chủ đề "${name}" khỏi Firestore?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Xóa ngay',
+        cancelButtonText: 'Hủy'
+      });
+      if (res.isConfirmed) {
+        try {
+          await db.collection("categories").doc(docId).delete();
+          Swal.fire({ icon: 'success', title: 'Đã xóa chủ đề!', timer: 1500, showConfirmButton: false });
+        } catch (err) {
+          Swal.fire('Lỗi', 'Không thể xóa: ' + err.message, 'error');
+        }
+      }
+    }
+
+    /* =========================================================================
+       CRUD ACTIONS (WORDS)
+       ========================================================================= */
+    let wordModalInstance;
+    function openAddWordModal() {
+      document.getElementById("wordId").value = "";
+      document.getElementById("wordEnglish").value = "";
+      document.getElementById("wordIPA").value = "";
+      document.getElementById("wordVietnamese").value = "";
+      document.getElementById("wordPartOfSpeech").value = "noun";
+      document.getElementById("wordDifficulty").value = "1";
+      document.getElementById("wordExample").value = "";
+      document.getElementById("wordExampleTranslation").value = "";
+      document.getElementById("wordModalTitle").textContent = "Thêm Từ vựng Mới";
+      wordModalInstance = new bootstrap.Modal(document.getElementById("wordModal"));
+      wordModalInstance.show();
+    }
+
+    function openEditWordModal(docId) {
+      const w = state.words.find(item => item.docId === docId);
+      if (!w) return;
+      document.getElementById("wordId").value = docId;
+      document.getElementById("wordEnglish").value = w.english || "";
+      document.getElementById("wordIPA").value = w.pronunciation || "";
+      document.getElementById("wordVietnamese").value = w.vietnamese || "";
+      document.getElementById("wordPartOfSpeech").value = w.part_of_speech || "noun";
+      document.getElementById("wordDifficulty").value = String(w.difficulty || 1);
+      document.getElementById("wordCategoryId").value = String(w.category_id || "");
+      document.getElementById("wordExample").value = w.example || "";
+      document.getElementById("wordExampleTranslation").value = w.example_translation || "";
+      document.getElementById("wordModalTitle").textContent = "Chỉnh sửa Từ vựng";
+      wordModalInstance = new bootstrap.Modal(document.getElementById("wordModal"));
+      wordModalInstance.show();
+    }
+
+    function autoSuggestIPA() {
+      const word = document.getElementById("wordEnglish").value.trim().toLowerCase();
+      if (!word) return;
+      // Common rule-based phonetic approximation helper
+      const ipaInput = document.getElementById("wordIPA");
+      if (!ipaInput.value || ipaInput.value.startsWith("/")) {
+        ipaInput.value = `/${word}/`;
+      }
+    }
+
+    function speakCurrentModalWord() {
+      const word = document.getElementById("wordEnglish").value.trim();
+      if (word) speakText(word);
+    }
+
+    async function saveWord() {
+      const docId = document.getElementById("wordId").value;
+      const english = document.getElementById("wordEnglish").value.trim();
+      const pronunciation = document.getElementById("wordIPA").value.trim();
+      const vietnamese = document.getElementById("wordVietnamese").value.trim();
+      const partOfSpeech = document.getElementById("wordPartOfSpeech").value;
+      const difficulty = Number(document.getElementById("wordDifficulty").value) || 1;
+      const categoryId = Number(document.getElementById("wordCategoryId").value) || 1;
+      const example = document.getElementById("wordExample").value.trim();
+      const exampleTranslation = document.getElementById("wordExampleTranslation").value.trim();
+
+      if (!english || !vietnamese) {
+        Swal.fire('Lỗi', 'Vui lòng nhập cả từ tiếng Anh và nghĩa tiếng Việt', 'error');
+        return;
+      }
+
+      const id = docId ? (Number(docId) || docId) : (Date.now() % 1000000);
+      const data = {
+        id: id,
+        category_id: categoryId,
+        english: english,
+        vietnamese: vietnamese,
+        pronunciation: pronunciation || `/${english.toLowerCase()}/`,
+        part_of_speech: partOfSpeech,
+        difficulty: difficulty,
+        example: example,
+        example_translation: exampleTranslation,
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        const targetDocId = docId || String(id);
+        await db.collection("words").doc(targetDocId).set(data, { merge: true });
+        wordModalInstance.hide();
+        Swal.fire({ icon: 'success', title: 'Đã lưu từ vựng lên Cloud Firestore!', timer: 1500, showConfirmButton: false });
+      } catch (err) {
+        Swal.fire('Lỗi', 'Không thể lưu từ vựng: ' + err.message, 'error');
+      }
+    }
+
+    async function deleteWord(docId, english) {
+      const res = await Swal.fire({
+        title: `Xóa từ "${english}"?`,
+        text: "Thao tác này sẽ xóa từ vựng khỏi cơ sở dữ liệu Cloud Firestore.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Xóa ngay',
+        cancelButtonText: 'Hủy'
+      });
+      if (res.isConfirmed) {
+        try {
+          await db.collection("words").doc(docId).delete();
+          Swal.fire({ icon: 'success', title: 'Đã xóa từ vựng!', timer: 1500, showConfirmButton: false });
+        } catch (err) {
+          Swal.fire('Lỗi', 'Không thể xóa: ' + err.message, 'error');
+        }
+      }
+    }
+
+    /* =========================================================================
+       CRUD ACTIONS (QUIZ QUESTIONS & SMART GENERATOR)
+       ========================================================================= */
+    let questionModalInstance, smartQuizModalInstance;
+    function openAddQuestionModal() {
+      document.getElementById("questionId").value = "";
+      document.getElementById("questionPrompt").value = "";
+      document.getElementById("option0").value = "";
+      document.getElementById("option1").value = "";
+      document.getElementById("option2").value = "";
+      document.getElementById("option3").value = "";
+      document.querySelector('input[name="correctOptionRadio"][value="0"]').checked = true;
+      document.getElementById("questionModalTitle").textContent = "Thêm Câu hỏi Trắc nghiệm";
+      questionModalInstance = new bootstrap.Modal(document.getElementById("questionModal"));
+      questionModalInstance.show();
+    }
+
+    async function saveQuestion() {
+      const prompt = document.getElementById("questionPrompt").value.trim();
+      const catId = Number(document.getElementById("questionCategoryId").value) || 1;
+      const opts = [
+        document.getElementById("option0").value.trim(),
+        document.getElementById("option1").value.trim(),
+        document.getElementById("option2").value.trim(),
+        document.getElementById("option3").value.trim(),
+      ];
+      const correctIdx = Number(document.querySelector('input[name="correctOptionRadio"]:checked')?.value || 0);
+      const correctAnswer = opts[correctIdx];
+
+      if (!prompt || opts.some(o => !o)) {
+        Swal.fire('Lỗi', 'Vui lòng nhập nội dung câu hỏi và cả 4 phương án trả lời.', 'error');
+        return;
+      }
+
+      const id = Date.now() % 1000000;
+      const data = {
+        id: id,
+        category_id: catId,
+        question_type: 'meaning',
+        prompt: prompt,
+        options: opts,
+        options_json: JSON.stringify(opts),
+        correct_answer: correctAnswer,
+        is_active: true,
+        created_at: new Date().toISOString()
+      };
+
+      try {
+        await db.collection("quizQuestions").doc(String(id)).set(data);
+        questionModalInstance.hide();
+        Swal.fire({ icon: 'success', title: 'Đã tạo câu hỏi quiz!', timer: 1500, showConfirmButton: false });
+      } catch (err) {
+        Swal.fire('Lỗi', 'Không thể lưu câu hỏi: ' + err.message, 'error');
+      }
+    }
+
+    async function deleteQuestion(docId) {
+      try {
+        await db.collection("quizQuestions").doc(docId).delete();
+        Swal.fire({ icon: 'success', title: 'Đã xóa câu hỏi!', timer: 1500, showConfirmButton: false });
+      } catch (err) {
+        Swal.fire('Lỗi', 'Không thể xóa câu hỏi: ' + err.message, 'error');
+      }
+    }
+
+    function openSmartQuizModal() {
+      smartQuizModalInstance = new bootstrap.Modal(document.getElementById("smartQuizModal"));
+      smartQuizModalInstance.show();
+    }
+
+    async function runSmartQuizGenerator() {
+      const selectedCat = document.getElementById("smartQuizCategorySelect").value;
+      const count = Number(document.getElementById("smartQuizCountSelect").value) || 10;
+
+      let eligibleWords = state.words;
+      if (selectedCat !== "all") {
+        eligibleWords = eligibleWords.filter(w => String(w.category_id) === String(selectedCat));
+      }
+
+      if (eligibleWords.length < 4) {
+        Swal.fire('Thiếu dữ liệu', 'Cần ít nhất 4 từ vựng trong kho để tạo trắc nghiệm 4 đáp án.', 'warning');
+        return;
+      }
+
+      // Shuffle & pick words
+      const shuffled = [...eligibleWords].sort(() => 0.5 - Math.random());
+      const selectedWords = shuffled.slice(0, Math.min(count, shuffled.length));
+
+      const batch = db.batch();
+      let generated = 0;
+
+      selectedWords.forEach((word) => {
+        const correct = word.vietnamese;
+        // Distractors from other words
+        const distractors = state.words
+          .filter(w => w.vietnamese !== correct)
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 3)
+          .map(w => w.vietnamese);
+
+        if (distractors.length < 3) return;
+
+        const options = [correct, ...distractors].sort(() => 0.5 - Math.random());
+        const qId = Date.now() + Math.floor(Math.random() * 10000) + generated;
+        const ref = db.collection("quizQuestions").doc(String(qId));
+
+        batch.set(ref, {
+          id: qId,
+          category_id: word.category_id || 1,
+          question_type: 'meaning',
+          prompt: `Nghĩa của từ "${word.english}" là gì?`,
+          options: options,
+          options_json: JSON.stringify(options),
+          correct_answer: correct,
+          is_active: true,
+          created_at: new Date().toISOString()
+        });
+        generated++;
+      });
+
+      try {
+        await batch.commit();
+        smartQuizModalInstance.hide();
+        Swal.fire({
+          icon: 'success',
+          title: 'Tự động tạo Quiz Thành công!',
+          text: `Đã sinh thông minh ${generated} câu hỏi trắc nghiệm mới và lưu trực tiếp vào Cloud Firestore!`,
+          confirmButtonColor: '#3f6ad8'
+        });
+      } catch (err) {
+        Swal.fire('Lỗi', 'Không thể sinh quiz: ' + err.message, 'error');
+      }
+    }
+
+    /* =========================================================================
+       DEFAULT SAMPLE DATA SEEDING
+       ========================================================================= */
+    async function seedSampleData() {
+      const res = await Swal.fire({
+        title: 'Xác nhận Nạp Dữ liệu Mẫu?',
+        text: 'Thao tác này sẽ nạp 5 Danh mục chuẩn, 25+ Từ vựng thông minh và Câu hỏi quiz trực tiếp lên Cloud Firestore vocabgo-c37af.',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#3ac47d',
+        confirmButtonText: 'Nạp dữ liệu ngay',
+        cancelButtonText: 'Hủy'
+      });
+      if (!res.isConfirmed) return;
+
+      Swal.fire({ title: 'Đang nạp lên Firestore...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      const batch = db.batch();
+
+      // Sample Categories
+      const categories = [
+        { id: 1, name: "Du lịch & Khám phá", image: "✈️", description: "Từ vựng khi đi sân bay, khách sạn và khám phá danh lam thắng cảnh", is_active: true },
+        { id: 2, name: "Công nghệ & Kỹ thuật số", image: "💻", description: "Từ vựng về IT, phần mềm, trí tuệ nhân tạo và máy tính", is_active: true },
+        { id: 3, name: "Kinh doanh & Khởi nghiệp", image: "💼", description: "Từ vựng văn phòng, đàm phán hợp đồng và tài chính", is_active: true },
+        { id: 4, name: "Ẩm thực & Đồ uống", image: "🍕", description: "Từ vựng món ăn, cách chế biến và gọi món tại nhà hàng", is_active: true },
+        { id: 5, name: "Giao tiếp Hàng ngày", image: "💬", description: "Các mẫu câu và từ ngữ thân thiện giao tiếp trong cuộc sống", is_active: true }
+      ];
+
+      categories.forEach(c => {
+        batch.set(db.collection("categories").doc(String(c.id)), { ...c, updated_at: new Date().toISOString() });
+      });
+
+      // Sample Words
+      const words = [
+        { id: 101, category_id: 1, english: "itinerary", pronunciation: "/aɪˈtɪnəreri/", part_of_speech: "noun", vietnamese: "lịch trình chuyến đi", example: "We planned a detailed itinerary for our Japan trip.", example_translation: "Chúng tôi lên lịch trình chi tiết cho chuyến đi Nhật Bản.", difficulty: 2 },
+        { id: 102, category_id: 1, english: "destination", pronunciation: "/ˌdɛstɪˈneɪʃən/", part_of_speech: "noun", vietnamese: "điểm đến", example: "Da Nang is a popular destination for summer holidays.", example_translation: "Đà Nẵng là điểm đến nổi tiếng cho kỳ nghỉ hè.", difficulty: 1 },
+        { id: 103, category_id: 1, english: "breathtaking", pronunciation: "/ˈbreθˌteɪkɪŋ/", part_of_speech: "adjective", vietnamese: "ngoạn mục, đẹp choáng ngợp", example: "The view from the mountain top was breathtaking.", example_translation: "Khung cảnh từ đỉnh núi đẹp choáng ngợp.", difficulty: 2 },
+        { id: 201, category_id: 2, english: "artificial intelligence", pronunciation: "/ˌɑːtɪˈfɪʃəl ɪnˈtɛlɪdʒəns/", part_of_speech: "noun", vietnamese: "trí tuệ nhân tạo (AI)", example: "Artificial intelligence is reshaping the future of education.", example_translation: "Trí tuệ nhân tạo đang định hình lại tương lai giáo dục.", difficulty: 2 },
+        { id: 202, category_id: 2, english: "algorithm", pronunciation: "/ˈælɡəˌrɪðəm/", part_of_speech: "noun", vietnamese: "thuật toán", example: "The search engine uses a complex ranking algorithm.", example_translation: "Công cụ tìm kiếm sử dụng thuật toán xếp hạng phức tạp.", difficulty: 2 },
+        { id: 203, category_id: 2, english: "breakthrough", pronunciation: "/ˈbreɪkˌθruː/", part_of_speech: "noun", vietnamese: "bước đột phá", example: "Scientists announced a revolutionary breakthrough in clean energy.", example_translation: "Các nhà khoa học công bố bước đột phá mang tính cách mạng về năng lượng sạch.", difficulty: 3 },
+        { id: 301, category_id: 3, english: "entrepreneur", pronunciation: "/ˌɒntrəprəˈnɜːr/", part_of_speech: "noun", vietnamese: "doanh nhân khởi nghiệp", example: "Every young entrepreneur faces setbacks before achieving success.", example_translation: "Mỗi doanh nhân trẻ đều đối mặt với trở ngại trước khi thành công.", difficulty: 2 },
+        { id: 302, category_id: 3, english: "negotiate", pronunciation: "/nɪˈɡoʊʃieɪt/", part_of_speech: "verb", vietnamese: "đàm phán, thương lượng", example: "We managed to negotiate a better deal for the contract.", example_translation: "Chúng tôi đã đàm phán được thỏa thuận tốt hơn cho hợp đồng.", difficulty: 2 },
+        { id: 401, category_id: 4, english: "delicious", pronunciation: "/dɪˈlɪʃəs/", part_of_speech: "adjective", vietnamese: "thơm ngon", example: "This traditional pho soup is absolutely delicious.", example_translation: "Món phở truyền thống này thực sự rất ngon.", difficulty: 1 },
+        { id: 402, category_id: 4, english: "appetizer", pronunciation: "/ˈæpɪˌtaɪzər/", part_of_speech: "noun", vietnamese: "món khai vị", example: "We ordered garlic bread as an appetizer.", example_translation: "Chúng tôi gọi bánh mì bơ tỏi làm món khai vị.", difficulty: 1 },
+        { id: 501, category_id: 5, english: "serendipity", pronunciation: "/ˌsɛrənˈdɪpɪti/", part_of_speech: "noun", vietnamese: "sự tình cờ may mắn", example: "Finding this cozy coffee shop was pure serendipity.", example_translation: "Tìm thấy quán cà phê ấm cúng này quả là một sự tình cờ may mắn.", difficulty: 3 }
+      ];
+
+      words.forEach(w => {
+        batch.set(db.collection("words").doc(String(w.id)), { ...w, updated_at: new Date().toISOString() });
+      });
+
+      try {
+        await batch.commit();
+        Swal.fire({
+          icon: 'success',
+          title: 'Khởi tạo Thành công!',
+          text: '5 Danh mục và hơn 11 Từ vựng chuẩn đã được nạp lên Firestore vocabgo-c37af!',
+          confirmButtonColor: '#3f6ad8'
+        });
+      } catch (err) {
+        Swal.fire('Lỗi', 'Không thể nạp dữ liệu: ' + err.message, 'error');
+      }
+    }
+
+    function exportDataBackup() {
+      const data = {
+        exportedAt: new Date().toISOString(),
+        projectId: firebaseConfig.projectId,
+        categories: state.categories,
+        words: state.words,
+        questions: state.questions
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `vocabgo-firestore-backup-${new Date().toISOString().substring(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /* =========================================================================
+       TEXT TO SPEECH (WEB SPEECH API)
+       ========================================================================= */
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) {
+        Swal.fire('Thông báo', 'Trình duyệt của bạn chưa hỗ trợ Web Speech Synthesis.', 'info');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    /* =========================================================================
+       AUTHENTICATION HANDLERS
+       ========================================================================= */
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const btn = document.getElementById("btnLoginSubmit");
+
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Đang đăng nhập...`;
+
+      try {
+        const credential = await auth.signInWithEmailAndPassword(email, password);
+        if (!credential.user || !(await checkAdminRole(credential.user))) {
+          await auth.signOut();
+          throw new Error('Tài khoản chưa được cấp quyền Admin.');
+        }
+        document.getElementById("loginOverlay").classList.add("d-none");
+        initRealtimeListeners();
+        Swal.fire({ icon: 'success', title: 'Đăng nhập Admin thành công!', timer: 1500, showConfirmButton: false });
+      } catch (err) {
+        Swal.fire('Lỗi đăng nhập', 'Thông tin đăng nhập không chính xác hoặc tài khoản chưa được cấp quyền: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-right-to-bracket me-1"></i> Đăng nhập Admin`;
+      }
+    }
+
+    async function handleLogout() {
+      await auth.signOut();
+      document.getElementById("loginOverlay").classList.remove("d-none");
+    }
+
+    /* =========================================================================
+       UI TAB SWITCHING & HELPERS
+       ========================================================================= */
+    function switchTab(tabId) {
+      document.querySelectorAll(".admin-tab-pane").forEach(el => el.classList.add("d-none"));
+      document.querySelectorAll(".nav-link-architect").forEach(el => el.classList.remove("active"));
+      
+      const target = document.getElementById(tabId);
+      if (target) target.classList.remove("d-none");
+
+      // Update Page Title
+      const icon = document.getElementById("pageTitleIcon");
+      const heading = document.getElementById("pageTitleHeading");
+      const subheading = document.getElementById("pageTitleSubheading");
+      const actions = document.getElementById("pageTitleActions");
+
+      if (tabId === 'tabDashboard') {
+        icon.innerHTML = `<i class="fa-solid fa-chart-pie"></i>`;
+        heading.textContent = "Tổng quan Hệ thống";
+        subheading.textContent = "Báo cáo thời gian thực trực tiếp từ Google Cloud Firestore";
+        actions.innerHTML = ``;
+      } else if (tabId === 'tabCategories') {
+        icon.innerHTML = `<i class="fa-solid fa-layer-group"></i>`;
+        heading.textContent = "Chủ đề Bài học";
+        subheading.textContent = "Quản lý danh mục từ vựng, biểu tượng emoji và phân loại bài học";
+        actions.innerHTML = `<button class="btn btn-primary btn-sm" onclick="openAddCategoryModal()"><i class="fa-solid fa-plus me-1"></i> Thêm Chủ đề</button>`;
+      } else if (tabId === 'tabWords') {
+        icon.innerHTML = `<i class="fa-solid fa-book-bookmark"></i>`;
+        heading.textContent = "Kho Từ vựng Thông minh";
+        subheading.textContent = "Biên tập từ vựng, phiên âm chuẩn IPA, phát âm Web Speech TTS và ví dụ";
+        actions.innerHTML = `<button class="btn btn-primary btn-sm" onclick="openAddWordModal()"><i class="fa-solid fa-plus me-1"></i> Thêm từ mới</button>`;
+      } else if (tabId === 'tabQuiz') {
+        icon.innerHTML = `<i class="fa-solid fa-circle-question"></i>`;
+        heading.textContent = "Ngân hàng Câu hỏi Quiz";
+        subheading.textContent = "Tự động sinh câu hỏi trắc nghiệm thông minh từ kho từ vựng hiện có";
+        actions.innerHTML = `<button class="btn btn-warning btn-sm text-dark fw-bold" onclick="openSmartQuizModal()"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> Tự động tạo Quiz</button>`;
+      } else if (tabId === 'tabUsers') {
+        icon.innerHTML = `<i class="fa-solid fa-users"></i>`;
+        heading.textContent = "Quản lý Học viên";
+        subheading.textContent = "Danh sách hồ sơ học viên; thay đổi tài khoản và quyền tại Firebase Console";
+        actions.innerHTML = ``;
+      } else if (tabId === 'tabSeed') {
+        icon.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i>`;
+        heading.textContent = "Khởi tạo & Đồng bộ Dữ liệu";
+        subheading.textContent = "Tiện ích nạp kho từ vựng chuẩn VocabGo lên Cloud Firestore và sao lưu";
+        actions.innerHTML = ``;
+      }
+
+      // Mark active in sidebar
+      event?.currentTarget?.classList?.add("active");
+    }
+
+    function filterCategories() { renderCategories(); }
+    function filterWords() { renderWords(); }
+    function filterUsers() { renderUsers(); }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    document.getElementById("btnToggleSidebar")?.addEventListener("click", () => {
+      document.getElementById("appSidebar")?.classList.toggle("show");
+    });
+  </script>
+</body>
+</html>

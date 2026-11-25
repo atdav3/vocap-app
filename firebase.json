@@ -1,0 +1,41 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "site": "vocabgo-c37af",
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "vocabgo-c37af",
+          "appId": "1:448164398155:android:ee4cf9688c1a75503eb9ce",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "vocabgo-c37af",
+          "configurations": {
+            "android": "1:448164398155:android:ee4cf9688c1a75503eb9ce",
+            "web": "1:448164398155:web:ba366e6620fbb45f3eb9ce"
+          }
+        }
+      }
+    }
+  }
+}
